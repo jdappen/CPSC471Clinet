@@ -46,3 +46,5 @@ Network Trash Folder
 Temporary Items
 .apdisk
 /client/nbproject/private/
+/client/dist/
+/client/build/
