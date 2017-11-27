@@ -16,6 +16,9 @@ import java.io.FileOutputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.OutputStream;
 
 public class Client {
@@ -50,10 +53,9 @@ public class Client {
         out = new PrintWriter(socket.getOutputStream(), true);
         
         
-        for(int i =0; i<1; i++)
-        {
-            System.out.println(in.readLine());
-        }
+        
+        System.out.println(in.readLine());
+        System.out.print(in.readLine());   
         
         //Gets the command typed from user
         output = typed.nextLine();
@@ -74,7 +76,7 @@ public class Client {
         }
         else if("put".equals(command[0]))
         {
-            upload(command[1]);
+            upload(command[1], socket);
         }
         
     }
@@ -82,7 +84,7 @@ public class Client {
     public static void download( String message, Socket socket) throws IOException
     {
         
-        int count;
+       int count;
        InputStream in =socket.getInputStream();
        
        OutputStream out = new FileOutputStream(message);
@@ -95,36 +97,35 @@ public class Client {
        }
         
         
-        
-        
-        
-        
-        
-//        int bytesRead;
-//        int counter = 0;
-//        byte byteArray[] = new byte[99999999];
-//        InputStream IS = socket.getInputStream();
-//        FileOutputStream fileOut = new FileOutputStream(message);
-//        BufferedOutputStream bufOut = new BufferedOutputStream(fileOut);
-//        bytesRead = IS.read(byteArray, 0, byteArray.length);
-//        counter = bytesRead;
-//        do{
-//            bytesRead = IS.read(byteArray, counter, (byteArray.length- counter));
-//            if(bytesRead >= 0)
-//            {
-//                counter += bytesRead;
-//            }
-//        }while(counter > -1);
-//        
-//        bufOut.write(byteArray, 0, counter);
-//        bufOut.flush();
-        
     }
     
     
-    public static void upload(String message)
+    public static void upload(String message, Socket socket) throws FileNotFoundException, IOException
     {
+         int count = 0;
         
+        File myFile = new File(message);
+        long length = myFile.length();
+        byte data[] = new byte[16*1024];
+        
+        InputStream in = new FileInputStream(myFile);
+        OutputStream out = socket.getOutputStream();
+   
+        if(myFile.exists())
+        {
+            while((count = in.read(data)) > 0)
+            {
+                out.write(data, 0, count);
+            }
+            System.out.println("SUCCESS");
+        }
+        else
+        {
+            System.out.println("FAILURE");
+        }
+            
+        out.close();
+        in.close();
     }
     
     public static void list()
